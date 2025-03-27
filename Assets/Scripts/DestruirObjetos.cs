@@ -6,6 +6,9 @@ public class DestruirObjetos : MonoBehaviour
     [SerializeField]private AgregarPuntaje agregarPuntaje;
     [SerializeField]private EmpezarJuego empezarJuego;
 
+    [SerializeField] private float fuerzaInicial;
+    [SerializeField]private bool inicioFuerza;
+
     private Rigidbody2D rb;
 
     public Transform posInicial;
@@ -21,12 +24,24 @@ public class DestruirObjetos : MonoBehaviour
     {
         if (!empezarJuego.empezar)
         {
-            rb.gravityScale = 0;
+            rb.linearVelocity = Vector2.zero;
+            inicioFuerza = false;
         }
-        else
+        else if (!inicioFuerza && empezarJuego.empezar)
         {
-            rb.gravityScale = 1;
+            inicioFuerza = true;
+            AgregarFuerza();
         }
+
+
+    }
+
+    private void AgregarFuerza()
+    {
+        inicioFuerza = true;
+        rb.AddForce(Vector2.one * fuerzaInicial, ForceMode2D.Impulse);
+        Debug.Log("Fuerzaaaa");
+        
     }
 
 
@@ -46,6 +61,7 @@ public class DestruirObjetos : MonoBehaviour
             agregarPuntaje.ResetPuntos();
             empezarJuego.empezar = false;
             Debug.Log("Limite");
+            inicioFuerza = false;
 
             StartCoroutine(ReiniciarPosicion());
         }
@@ -56,10 +72,7 @@ public class DestruirObjetos : MonoBehaviour
     {
         transform.position = posInicial.position;
         rb.linearVelocity = Vector2.zero;
-        rb.gravityScale = 0;
         yield return new WaitForSeconds(0.5f);
-
-        rb.gravityScale = 1;
         
     }
 
